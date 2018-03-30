@@ -47,7 +47,7 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
             description.setText(imageItem.getDescription());
             Picasso.with(mContext)
                     .load(imageItem.getId_default_image())
-                    //.placeholder(R.drawable.bill_up_close)
+                    //.placeholder(R.drawable.up_close)
                     .into(default_image);
         }
     }
