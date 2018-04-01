@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.chepizhko.prestashop.adapter.PrestaAdapter;
 import com.chepizhko.prestashop.api.APIService;
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 Log.d(TAG, "RESPONSE ====== " + response+ "=============="+getAuthToken());
+                if(response.isSuccessful()) {
+                    Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
 //                try {
 //                    Log.d(TAG, "response.body().string() ====== " + response.body().string());
 //
@@ -67,11 +70,15 @@ public class MainActivity extends AppCompatActivity {
 //                }catch (NullPointerException e) {
 //                    e.printStackTrace();
 //                }
+                }else {
+                    Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                }
 
             }
 
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
 
             }
         });
