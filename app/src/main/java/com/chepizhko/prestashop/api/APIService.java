@@ -7,7 +7,8 @@ import retrofit2.http.Header;
 
 public interface APIService {
 
-    @GET("api/productsdisplay=[name,description,id_default_image,price,reference]&limit=20")
+    //@GET("api/productsdisplay=[name,description,id_default_image,price,reference]&limit=20")
+    @GET("api")
     Call<ResponseBody> callBack (@Header("Authorization") String credential);
 
 }

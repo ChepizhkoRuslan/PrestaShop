@@ -44,6 +44,19 @@ public class MainActivity extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
+
+        //        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+//                .authenticator((route, response) -> {
+//                    Request request = response.request();
+//                    if (request.header("Authorization") != null)
+//                        // Логин и пароль неверны
+//                        return null;
+//                    return request.newBuilder()
+//                            .header("Authorization", Credentials.basic(KEY, ""))
+//                            .build();
+//                })
+//                .build();
+
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new BasicAuthInterceptor(getAuthToken()))
                 .build();
@@ -53,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();
+
+
+
+
 
         final APIService service = retrofit.create(APIService.class);
         Call<ResponseBody> resp = service.callBack(getAuthToken());
