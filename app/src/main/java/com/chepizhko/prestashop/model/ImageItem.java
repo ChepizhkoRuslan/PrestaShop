@@ -16,6 +16,9 @@ public class ImageItem {
         this.price = price;
     }
 
+    public ImageItem() {
+    }
+
     public String getName() {
         return name;
     }

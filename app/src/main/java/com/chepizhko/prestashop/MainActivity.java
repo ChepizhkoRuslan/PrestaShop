@@ -16,6 +16,7 @@ import com.chepizhko.prestashop.auth.BasicAuthInterceptor;
 import com.chepizhko.prestashop.model.ImageItem;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.leibnizcenter.xml.NotImplemented;
@@ -94,10 +95,12 @@ public class MainActivity extends AppCompatActivity {
                     String json = new Gson().toJson(terseDoc);
                     //Log.d(TAG, "JSONObject ================= " + json);
 
+
+
                     JSONObject jsonBody = new JSONObject(json);
 
                     // метод вызывает parseItems(…) и возвращает List с объектами GalleryItem
-                    //parseItems(items, jsonBody);
+                    parseItems(items, jsonBody);
 
 
 
@@ -133,6 +136,23 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initAdapter();
 
+    }
+
+    private void parseItems(List<ImageItem> items, JSONObject jsonBody) throws IOException, JSONException{
+        JSONObject itemJsonObject = jsonBody.getJSONObject("products");
+        JSONArray itemJsonArray = itemJsonObject.getJSONArray("product");
+        for (int i = 0; i < itemJsonArray.length(); i++) {
+            JSONObject photoJsonObject = itemJsonArray.getJSONObject(i);
+            ImageItem item = new ImageItem();
+            Toast.makeText(this, "RESPONSE  " + photoJsonObject.getString("id_default_image"), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "RESPONSE ================== " + photoJsonObject.getString("id_default_image"));
+            item.setId_default_image(photoJsonObject.getString("id_default_image"));
+            item.setName(photoJsonObject.getString("name"));
+            item.setDescription(photoJsonObject.getString("description"));
+            item.setReference(photoJsonObject.getString("reference"));
+            item.setPrice(photoJsonObject.getString("price"));
+            items.add(item);
+        }
     }
 
     private void initAdapter() {
