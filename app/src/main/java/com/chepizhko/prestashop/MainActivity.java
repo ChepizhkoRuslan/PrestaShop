@@ -14,29 +14,21 @@ import com.chepizhko.prestashop.adapter.PrestaAdapter;
 import com.chepizhko.prestashop.api.APIService;
 import com.chepizhko.prestashop.auth.BasicAuthInterceptor;
 import com.chepizhko.prestashop.model.ImageItem;
-import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.leibnizcenter.xml.NotImplemented;
 import org.leibnizcenter.xml.TerseJson;
-import org.leibnizcenter.xml.helpers.DomHelper;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private static String KEY = "XHKM6A6BLCA5MNYZQBX2GXBAAKSTPMK2";
@@ -65,59 +57,63 @@ public class MainActivity extends AppCompatActivity {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://ps1722.weeteam.net/")
 //                .addConverterFactory(GsonConverterFactory.create())
-//                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .addConverterFactory(new ToStringConverterFactory())
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+//                .addConverterFactory(new ToStringConverterFactory())
                 .client(client)
                 .build();
 
 
         final APIService service = retrofit.create(APIService.class);
-        Call<String> resp = service.callBack(getAuthToken());
-        resp.enqueue(new Callback<String>() {
+        Call<ResponseBody> resp = service.callBack(getAuthToken());
+        resp.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 Log.d(TAG, "RESPONSE ====== " + response+ "=============="+getAuthToken());
                 if(response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
-                try {
-                    //Log.d(TAG, "response.body().string() ====== " + response.body().toString());
+//                try {
+                    try {
+                        Log.d(TAG, "response.body().string() ====== " + response.body().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
-                    String str = response.body().toString();
-
-                    Document doc = DomHelper.parse(String.valueOf(str));
-
-                    // Convert DOM to terse representation, and convert to JSON
-                    TerseJson.Options opts = TerseJson.Options
-                            .with(COMPACT_WHITE_SPACE)
-                            .and(TerseJson.ErrorBehaviour.ThrowAllErrors);
-
-                    Object terseDoc = new TerseJson(opts).convert(doc);
-                    String json = new Gson().toJson(terseDoc);
-                    //Log.d(TAG, "JSONObject ================= " + json);
-
-
-
-                    JSONObject jsonBody = new JSONObject(json);
-
-                    // метод вызывает parseItems(…) и возвращает List с объектами GalleryItem
-                    parseItems(items, jsonBody);
-
-
+//                    String str = response.body().toString();
+//
+//                    Document doc = DomHelper.parse(String.valueOf(str));
+//
+//                    // Convert DOM to terse representation, and convert to JSON
+//                    TerseJson.Options opts = TerseJson.Options
+//                            .with(COMPACT_WHITE_SPACE)
+//                            .and(TerseJson.ErrorBehaviour.ThrowAllErrors);
+//
+//                    Object terseDoc = new TerseJson(opts).convert(doc);
+//                    String json = new Gson().toJson(terseDoc);
+//                    //Log.d(TAG, "JSONObject ================= " + json);
+//
+//
+//
+//                    JSONObject jsonBody = new JSONObject(json);
+//
+//                    // метод вызывает parseItems(…) и возвращает List с объектами GalleryItem
+//                    parseItems(items, jsonBody);
 
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }catch (NullPointerException e) {
-                    e.printStackTrace();
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
-                } catch (SAXException e) {
-                    e.printStackTrace();
-                } catch (NotImplemented notImplemented) {
-                    notImplemented.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+
+
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }catch (NullPointerException e) {
+//                    e.printStackTrace();
+//                } catch (ParserConfigurationException e) {
+//                    e.printStackTrace();
+//                } catch (SAXException e) {
+//                    e.printStackTrace();
+//                } catch (NotImplemented notImplemented) {
+//                    notImplemented.printStackTrace();
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
                 }else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 }
@@ -125,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
 
             }
@@ -138,22 +134,22 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void parseItems(List<ImageItem> items, JSONObject jsonBody) throws IOException, JSONException{
-        JSONObject itemJsonObject = jsonBody.getJSONObject("products");
-        JSONArray itemJsonArray = itemJsonObject.getJSONArray("product");
-        for (int i = 0; i < itemJsonArray.length(); i++) {
-            JSONObject photoJsonObject = itemJsonArray.getJSONObject(i);
-            ImageItem item = new ImageItem();
-            Toast.makeText(this, "RESPONSE  " + photoJsonObject.getString("id_default_image"), Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "RESPONSE ================== " + photoJsonObject.getString("id_default_image"));
-            item.setId_default_image(photoJsonObject.getString("id_default_image"));
-            item.setName(photoJsonObject.getString("name"));
-            item.setDescription(photoJsonObject.getString("description"));
-            item.setReference(photoJsonObject.getString("reference"));
-            item.setPrice(photoJsonObject.getString("price"));
-            items.add(item);
-        }
-    }
+//    private void parseItems(List<ImageItem> items, JSONObject jsonBody) throws IOException, JSONException{
+//        JSONObject itemJsonObject = jsonBody.getJSONObject("products");
+//        JSONArray itemJsonArray = itemJsonObject.getJSONArray("product");
+//        for (int i = 0; i < itemJsonArray.length(); i++) {
+//            JSONObject photoJsonObject = itemJsonArray.getJSONObject(i);
+//            ImageItem item = new ImageItem();
+//            Toast.makeText(this, "RESPONSE  " + photoJsonObject.getString("id_default_image"), Toast.LENGTH_SHORT).show();
+//            Log.d(TAG, "RESPONSE ================== " + photoJsonObject.getString("id_default_image"));
+//            item.setId_default_image(photoJsonObject.getString("id_default_image"));
+//            item.setName(photoJsonObject.getString("name"));
+//            item.setDescription(photoJsonObject.getString("description"));
+//            item.setReference(photoJsonObject.getString("reference"));
+//            item.setPrice(photoJsonObject.getString("price"));
+//            items.add(item);
+//        }
+//    }
 
     private void initAdapter() {
         rv.setAdapter(new PrestaAdapter(getApplicationContext(), items));
