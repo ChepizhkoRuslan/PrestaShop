@@ -1,7 +1,7 @@
 package com.chepizhko.prestashop.model;
 
-
 public class ImageItem {
+
     private String id_default_image;
     private String name;
     private String description;

@@ -14,18 +14,28 @@ import com.chepizhko.prestashop.adapter.PrestaAdapter;
 import com.chepizhko.prestashop.api.APIService;
 import com.chepizhko.prestashop.auth.BasicAuthInterceptor;
 import com.chepizhko.prestashop.model.ImageItem;
+import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.leibnizcenter.xml.NotImplemented;
+import org.leibnizcenter.xml.TerseJson;
+import org.leibnizcenter.xml.helpers.DomHelper;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private static String KEY = "XHKM6A6BLCA5MNYZQBX2GXBAAKSTPMK2";
@@ -33,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private List<ImageItem> items;;
     private List<String> descriptions;
     private RecyclerView rv;
+
+    private static final TerseJson.WhitespaceBehaviour COMPACT_WHITE_SPACE = TerseJson.WhitespaceBehaviour.Compact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,48 +57,64 @@ public class MainActivity extends AppCompatActivity {
         rv.setHasFixedSize(true);
 
 
-        //        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-//                .authenticator((route, response) -> {
-//                    Request request = response.request();
-//                    if (request.header("Authorization") != null)
-//                        // Логин и пароль неверны
-//                        return null;
-//                    return request.newBuilder()
-//                            .header("Authorization", Credentials.basic(KEY, ""))
-//                            .build();
-//                })
-//                .build();
-
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new BasicAuthInterceptor(getAuthToken()))
                 .build();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://ps1722.weeteam.net/")
-                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .addConverterFactory(new ToStringConverterFactory())
                 .client(client)
                 .build();
 
 
-
-
-
         final APIService service = retrofit.create(APIService.class);
-        Call<ResponseBody> resp = service.callBack(getAuthToken());
-        resp.enqueue(new Callback<ResponseBody>() {
+        Call<String> resp = service.callBack(getAuthToken());
+        resp.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
                 Log.d(TAG, "RESPONSE ====== " + response+ "=============="+getAuthToken());
                 if(response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
-//                try {
-//                    Log.d(TAG, "response.body().string() ====== " + response.body().string());
-//
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }catch (NullPointerException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    //Log.d(TAG, "response.body().string() ====== " + response.body().toString());
+
+                    String str = response.body().toString();
+
+                    Document doc = DomHelper.parse(String.valueOf(str));
+
+                    // Convert DOM to terse representation, and convert to JSON
+                    TerseJson.Options opts = TerseJson.Options
+                            .with(COMPACT_WHITE_SPACE)
+                            .and(TerseJson.ErrorBehaviour.ThrowAllErrors);
+
+                    Object terseDoc = new TerseJson(opts).convert(doc);
+                    String json = new Gson().toJson(terseDoc);
+                    //Log.d(TAG, "JSONObject ================= " + json);
+
+                    JSONObject jsonBody = new JSONObject(json);
+
+                    // метод вызывает parseItems(…) и возвращает List с объектами GalleryItem
+                    //parseItems(items, jsonBody);
+
+
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }catch (NullPointerException e) {
+                    e.printStackTrace();
+                } catch (ParserConfigurationException e) {
+                    e.printStackTrace();
+                } catch (SAXException e) {
+                    e.printStackTrace();
+                } catch (NotImplemented notImplemented) {
+                    notImplemented.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 }else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 }
@@ -94,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<String> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
 
             }
@@ -137,17 +165,17 @@ public class MainActivity extends AppCompatActivity {
     }
     private void initData() {
         items = new ArrayList<>();
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
+//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
 
     }
 
