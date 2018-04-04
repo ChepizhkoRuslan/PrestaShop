@@ -14,16 +14,15 @@ import com.chepizhko.prestashop.adapter.PrestaAdapter;
 import com.chepizhko.prestashop.api.APIService;
 import com.chepizhko.prestashop.auth.BasicAuthInterceptor;
 import com.chepizhko.prestashop.model.ImageItem;
+import com.chepizhko.prestashop.model.PrestaShop;
 
 import org.leibnizcenter.xml.TerseJson;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -64,19 +63,20 @@ public class MainActivity extends AppCompatActivity {
 
 
         final APIService service = retrofit.create(APIService.class);
-        Call<ResponseBody> resp = service.callBack(getAuthToken());
-        resp.enqueue(new Callback<ResponseBody>() {
+        Call<PrestaShop> resp = service.callBack(getAuthToken());
+        resp.enqueue(new Callback<PrestaShop>() {
             @Override
-            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
+            public void onResponse(@NonNull Call<PrestaShop> call, @NonNull Response<PrestaShop> response) {
                 Log.d(TAG, "RESPONSE ====== " + response+ "=============="+getAuthToken());
                 if(response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
 //                try {
-                    try {
-                        Log.d(TAG, "response.body().string() ====== " + response.body().string());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    PrestaShop data = response.body();
+
+
+                    data.getProductList().forEach(
+                            product ->
+                    Log.d(TAG, "response.body() ==== " + product.getId_default_image() + " Link: " + product.getPrice()));
 
 //                    String str = response.body().toString();
 //
@@ -117,15 +117,15 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 }
-
             }
-
             @Override
-            public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
+            public void onFailure(@NonNull Call<PrestaShop> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
-
             }
         });
+
+
+
 
 //        new NewAsyncTask().execute();
 
