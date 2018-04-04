@@ -7,7 +7,7 @@ import org.simpleframework.xml.Root;
 public class MyData {
 
     @Root(name = "products",strict = false)
-    public static class Product{
+    public static class Product2{
 
         @Element(name = "id_default_image",required = false)
         public String id_default_image;

@@ -9,14 +9,6 @@ public class Product {
     @Element(name = "id_default_image")
     String id_default_image;
 
-//    @Element(name = "language")
-//    @Path("name")
-//    String langName;
-//
-//    @Element(name = "language")
-//    @Path("description")
-//    String langDescription;
-
     @Element(name = "reference")
     String reference;
 

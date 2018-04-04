@@ -14,15 +14,19 @@ import com.chepizhko.prestashop.adapter.PrestaAdapter;
 import com.chepizhko.prestashop.api.APIService;
 import com.chepizhko.prestashop.auth.BasicAuthInterceptor;
 import com.chepizhko.prestashop.model.ImageItem;
-import com.chepizhko.prestashop.model.PrestaShop;
 
-import org.leibnizcenter.xml.TerseJson;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,10 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private static String KEY = "XHKM6A6BLCA5MNYZQBX2GXBAAKSTPMK2";
     public final static String TAG = "myLogs";
     private List<ImageItem> items;;
-    private List<String> descriptions;
+    //private List<String> descriptions;
     private RecyclerView rv;
 
-    private static final TerseJson.WhitespaceBehaviour COMPACT_WHITE_SPACE = TerseJson.WhitespaceBehaviour.Compact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,20 +66,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         final APIService service = retrofit.create(APIService.class);
-        Call<PrestaShop> resp = service.callBack(getAuthToken());
-        resp.enqueue(new Callback<PrestaShop>() {
+        Call<ResponseBody> resp = service.callBack(getAuthToken());
+        resp.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(@NonNull Call<PrestaShop> call, @NonNull Response<PrestaShop> response) {
+            public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 Log.d(TAG, "RESPONSE ====== " + response+ "=============="+getAuthToken());
                 if(response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
+
+                    try {
+                        parseXmlResponse(response.body().string());
+                    } catch (IOException | XmlPullParserException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    /// перевод хмл в стринг
 //                try {
-                    PrestaShop data = response.body();
-
-
-                    data.getProductList().forEach(
-                            product ->
-                    Log.d(TAG, "response.body() ==== " + product.getId_default_image() + " Link: " + product.getPrice()));
 
 //                    String str = response.body().toString();
 //
@@ -119,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(@NonNull Call<PrestaShop> call, Throwable t) {
+            public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
             }
         });
@@ -132,6 +138,82 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initAdapter();
 
+    }
+
+    private void parseXmlResponse(String RESPONSE_STRNG_HERE) throws XmlPullParserException, IOException {
+        List<String> name = new ArrayList<>();
+        List<String> description = new ArrayList<>();
+        List<String> reference = new ArrayList<>();
+        List<String> id_default_image = new ArrayList<>();
+        List<String> price = new ArrayList<>();
+
+        XmlPullParserFactory factory = null;
+        try {
+            factory = XmlPullParserFactory.newInstance();
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        }
+        if (factory != null) {
+            factory.setNamespaceAware(true);
+        }
+        XmlPullParser xpp = null;
+        if (factory != null) {
+            xpp = factory.newPullParser();
+        }
+        if (xpp != null) {
+            xpp.setInput(new StringReader(RESPONSE_STRNG_HERE));
+        }
+        int eventType = xpp.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_DOCUMENT) {
+                System.out.println("Start document");
+            } else if (eventType == XmlPullParser.START_TAG) {
+                System.out.println("Start tag " + xpp.getName());
+                Log.e("Count ", "" + xpp.getAttributeCount());
+
+
+
+                for (int ia = 0; ia < xpp.getAttributeCount(); ia++) {
+                    switch (xpp.getName()) {
+
+
+                        case "name":
+                            if(xpp.getName().equals("language")){
+                                if (xpp.getAttributeValue(null, "id").equals("1")) {
+                                    Toast.makeText(this, "-----------------------"+xpp.getAttributeValue(ia), Toast.LENGTH_SHORT).show();
+                                    Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
+                                    break;
+                                }
+                            }
+
+                            name.add(xpp.getAttributeValue(ia));
+
+                            break;
+                        case "description":
+                            description.add(xpp.getAttributeValue(ia));
+                            break;
+                        case "reference":
+                            description.add(xpp.getAttributeValue(ia));
+                            break;
+                        case "id_default_image":
+                            description.add(xpp.getAttributeValue(ia));
+                            break;
+                        case "price":
+                            description.add(xpp.getAttributeValue(ia));
+                            break;
+                    }
+                    Log.e("Attribute Name ", xpp.getAttributeName(ia));
+                    Log.e("Attribute Value ", xpp.getAttributeValue(ia));
+
+                }
+
+            } else if (eventType == XmlPullParser.END_TAG) {
+                System.out.println("End tag " + xpp.getName());
+            } else if (eventType == XmlPullParser.TEXT) {
+                Log.e("Text ", xpp.getText());
+            }
+            eventType = xpp.next();
+        }
     }
 
 //    private void parseItems(List<ImageItem> items, JSONObject jsonBody) throws IOException, JSONException{
