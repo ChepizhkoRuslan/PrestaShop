@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rv=(RecyclerView)findViewById(R.id.rv);
+        rv = (RecyclerView) findViewById(R.id.rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
@@ -81,49 +81,28 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
 
                     //XmlPullParser
-
                     try {
                         parseXmlResponse(response.body().string());
                     } catch (XmlPullParserException | IOException e) {
                         e.printStackTrace();
                     }
 
-////                    while(id_default_image.remove("true")) {}
-//                    for (String idi :id_default_image){
-////                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                    for (String idi :name){
-////                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
-//
-//                    }
-//                    for (String idi :description){
-//                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
-//
-//                    }
-//
-//                    for (String idi :text){
-//                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
-//
-//                    }
+                    items = ReworkList.reworkList(getApplicationContext(), id_default_image, text);
 
-                    items = ReworkList.reworkList(getApplicationContext(),items,id_default_image,text);
+                    rv.setAdapter(new PrestaAdapter(getApplicationContext(), items));
 
                 } else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
             }
         });
 
-
 //        new NewAsyncTask().execute();
-
-        initData();
-        initAdapter();
 
     }
 
@@ -151,49 +130,29 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Start document");
             } else if (eventType == XmlPullParser.START_TAG) {
                 System.out.println("Start tag " + xpp.getName());
-//                Log.e("Count ----------", "" + xpp.getAttributeCount());
+                Log.e("Count ----------", "" + xpp.getAttributeCount());
 
                 int ia;
                 for (ia = 0; ia < xpp.getAttributeCount(); ia++) {
 
                     switch (xpp.getName()) {
                         case "id_default_image":
-                            if(ia%2==0) {
-                                //Log.d(TAG, "getAttributeValue+++++++++++!!!!!!!!!!!++++++++++++++" + xpp.getAttributeValue(ia));
+                            if (ia % 2 == 0) {
+                                id_default_image.add(xpp.getAttributeValue(ia));
                             }
-                             break;
-//                        case "name":
-//                            Log.d(TAG, "++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//                            break;
-//                        case "language":
-//                            Log.d(TAG, "++++++++++++++++++++++++++++++" + xpp.nextText());
-//                            break;
-//                        case "description":
-////                            xpp.getName().equalsIgnoreCase("__cdata");
-
-//                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//                            break;
-//                        case "reference":
-//                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//                            break;
-//                        case "price":
-//                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//                            break;
+                            break;
                     }
-//                    Log.e("Attribute ======Name ", xpp.getAttributeName(ia));
-//                    Log.e("Attribute ======Value ", xpp.getAttributeValue(ia));
+                    Log.e("Attribute ======Name ", xpp.getAttributeName(ia));
+                    Log.e("Attribute ======Value ", xpp.getAttributeValue(ia));
                 }
 
             } else if (eventType == XmlPullParser.END_TAG) {
-//                System.out.println("End tag ------------- " + xpp.getName());
-            }
-            else if (eventType == XmlPullParser.TEXT ) {
+                System.out.println("End tag ------------- " + xpp.getName());
+            } else if (eventType == XmlPullParser.TEXT) {
 
-               if(xpp.getText().length() > 3  ){
-                   // if (xpp.getText().matches("id =")) {
+                if (xpp.getText().length() > 3) {
 
-                        //Log.e(TAG, "Text======!!!!!!!!!!!!!!================" + xpp.getText());
-                        text.add(xpp.getText());
+                    text.add(xpp.getText());
 
                 }
             }
@@ -201,10 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    private void initAdapter() {
-        rv.setAdapter(new PrestaAdapter(getApplicationContext(), items));
-    }
 
     public static String getAuthToken() {
         byte[] data = new byte[0];
@@ -217,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-//    private class NewAsyncTask extends AsyncTask<String, String,List<ImageItem>>{
+    //    private class NewAsyncTask extends AsyncTask<String, String,List<ImageItem>>{
 //
 //        @Override
 //        protected List<ImageItem>  doInBackground(String... strings) {
@@ -231,20 +186,4 @@ public class MainActivity extends AppCompatActivity {
 //            initAdapter();
 //        }
 //    }
-    private void initData() {
-        items = new ArrayList<>();
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-//        items.add(new ImageItem("https://www.simplifiedcoding.net/demos/marvel/ironman.jpg","yyyy","Fashion has been creating well-designed collections since 2010. The brand offers feminine designs delivering stylish separates and statement dresses which has since evolved into a full ready-to-wear collection in which every item is a vital part of a woman's wardrobe.","Ref: demo", "300$"));
-
-    }
-
 }

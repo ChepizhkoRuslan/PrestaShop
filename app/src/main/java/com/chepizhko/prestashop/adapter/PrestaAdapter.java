@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.chepizhko.prestashop.R;
 import com.chepizhko.prestashop.model.ImageItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -39,15 +40,15 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
         }
 
         private void bindGalleryItem(ImageItem imageItem) {
-//            name.setText(imageItem.getName());
-//            description.setText(imageItem.getDescription());
-//            reference.setText(imageItem.getReference());
-//            price.setText(imageItem.getPrice());
-//            description.setText(imageItem.getDescription());
-//            Picasso.with(mContext)
-//                    .load(imageItem.getId_default_image())
-//                    //.placeholder(R.drawable.up_close)
-//                    .into(default_image);
+            name.setText(imageItem.getName());
+            description.setText(imageItem.getDescription());
+            reference.setText(imageItem.getReference());
+            price.setText(imageItem.getPrice());
+            description.setText(imageItem.getDescription());
+            Picasso.with(mContext)
+                    .load(imageItem.getId_default_image())
+                    //.placeholder(R.drawable.up_close)
+                    .into(default_image);
         }
     }
 
