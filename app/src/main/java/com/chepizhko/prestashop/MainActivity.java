@@ -13,6 +13,7 @@ import com.chepizhko.prestashop.adapter.PrestaAdapter;
 import com.chepizhko.prestashop.api.APIService;
 import com.chepizhko.prestashop.auth.BasicAuthInterceptor;
 import com.chepizhko.prestashop.model.ImageItem;
+import com.chepizhko.prestashop.utils.ReworkList;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -35,17 +36,15 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private static String KEY = "XHKM6A6BLCA5MNYZQBX2GXBAAKSTPMK2";
     public final static String TAG = "myLogs";
-    private List<ImageItem> items;;
-    //private List<String> descriptions;
     private RecyclerView rv;
+    private List<ImageItem> items;
+    private List<String> text = new ArrayList<>();
+    private List<String> id_default_image = new ArrayList<>();
 
-//    private static final TerseJson.WhitespaceBehaviour COMPACT_WHITE_SPACE = TerseJson.WhitespaceBehaviour.Compact;
-
-    List<String> name = new ArrayList<>();
-    List<String> description = new ArrayList<>();
-    List<String> reference = new ArrayList<>();
-    List<String> id_default_image = new ArrayList<>();
-    List<String> price = new ArrayList<>();
+    private List<String> name = new ArrayList<>();
+    private List<String> description = new ArrayList<>();
+    private List<String> reference = new ArrayList<>();
+    private List<String> price = new ArrayList<>();
 
 
     @Override
@@ -89,15 +88,26 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    while(id_default_image.remove("true")) {}
-                    for (String idi :id_default_image){
+////                    while(id_default_image.remove("true")) {}
+//                    for (String idi :id_default_image){
+////                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                    for (String idi :name){
+////                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
+//
+//                    }
+//                    for (String idi :description){
 //                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
+//
+//                    }
+//
+//                    for (String idi :text){
+//                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
+//
+//                    }
 
-                    }
-                    for (String idi :name){
-                        Toast.makeText(MainActivity.this, "id = "+ idi, Toast.LENGTH_SHORT).show();
-
-                    }
+                    items = ReworkList.reworkList(getApplicationContext(),items,id_default_image,text);
 
                 } else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
@@ -118,7 +128,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void parseXmlResponse(String RESPONSE_STRNG_HERE) throws XmlPullParserException, IOException {
-
 
         XmlPullParserFactory factory = null;
         try {
@@ -142,80 +151,51 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Start document");
             } else if (eventType == XmlPullParser.START_TAG) {
                 System.out.println("Start tag " + xpp.getName());
-                Log.e("Count ----------", "" + xpp.getAttributeCount());
+//                Log.e("Count ----------", "" + xpp.getAttributeCount());
 
                 int ia;
                 for (ia = 0; ia < xpp.getAttributeCount(); ia++) {
 
-
                     switch (xpp.getName()) {
                         case "id_default_image":
-                            id_default_image.add(xpp.getAttributeValue(ia));
-                            Log.d(TAG, "getAttributeValue++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-
-                        break;
-
+                            if(ia%2==0) {
+                                //Log.d(TAG, "getAttributeValue+++++++++++!!!!!!!!!!!++++++++++++++" + xpp.getAttributeValue(ia));
+                            }
+                             break;
 //                        case "name":
-//                            if(xpp.getNamespace().equals("language")){
-//                                if (xpp.getAttributeValue(null, "id").equals("1")) {
-//                                    Toast.makeText(this, "-----------------------"+xpp.getAttributeValue(ia), Toast.LENGTH_SHORT).show();
-//                                    Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//                                    name.add(xpp.getAttributeValue(ia));
-//
-//                                    break;
-//                                }
-//                            }
-//
-//                            name.add(xpp.getAttributeValue(ia));
-//                                    Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//
+//                            Log.d(TAG, "++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
+//                            break;
+//                        case "language":
+//                            Log.d(TAG, "++++++++++++++++++++++++++++++" + xpp.nextText());
 //                            break;
 //                        case "description":
-//                            description.add(xpp.getAttributeValue(ia));
+////                            xpp.getName().equalsIgnoreCase("__cdata");
+
 //                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-//
 //                            break;
-                        case "language":
-                                if (xpp.getAttributeValue(null, "id").equals("1")) {
-
-                                    if(ia%2==0){
-                                        name.add(xpp.getAttributeValue(ia));
-                                        Log.d(TAG, "NAME++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-                                    }
-                                    if(ia%2==1){
-                                        description.add(xpp.getAttributeValue(ia));
-                                        Log.d(TAG, "DISCRIPTION++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-                                    }
-
-//                                    name.add(xpp.getAttributeValue(ia));
-//                                    Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-                                }
-
-                            break;
-
-                        case "reference":
-                            reference.add(xpp.getText());
-                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getText());
-
-                            break;
-
-                        case "price":
-                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
-
-                            price.add(xpp.getAttributeValue(ia));
-                            break;
+//                        case "reference":
+//                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
+//                            break;
+//                        case "price":
+//                            Log.d(TAG, "++++++++++++++++++++++++++++++++" + xpp.getAttributeValue(ia));
+//                            break;
                     }
 //                    Log.e("Attribute ======Name ", xpp.getAttributeName(ia));
 //                    Log.e("Attribute ======Value ", xpp.getAttributeValue(ia));
-
                 }
 
             } else if (eventType == XmlPullParser.END_TAG) {
-                System.out.println("End tag ------------- " + xpp.getName());
+//                System.out.println("End tag ------------- " + xpp.getName());
             }
-            else if (eventType == XmlPullParser.TEXT) {
-                Log.e("Text ---------", xpp.getText());
-//                if(xpp.getName().equals("reference"))
+            else if (eventType == XmlPullParser.TEXT ) {
+
+               if(xpp.getText().length() > 3  ){
+                   // if (xpp.getText().matches("id =")) {
+
+                        //Log.e(TAG, "Text======!!!!!!!!!!!!!!================" + xpp.getText());
+                        text.add(xpp.getText());
+
+                }
             }
             eventType = xpp.next();
         }

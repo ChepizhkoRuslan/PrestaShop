@@ -1,4 +1,4 @@
-package com.chepizhko.prestashop;
+package com.chepizhko.prestashop.utils;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
