@@ -80,12 +80,6 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
 
-//                    //XmlPullParser для парсинга урла фото - переделать на JSOUP!!!
-//                    try {
-//                        parseXmlResponse(response.body().string());
-//                    } catch (XmlPullParserException | IOException e) {
-//                        e.printStackTrace();
-//                    }
                     try {
                         Document document = Jsoup.parse(response.body().string());
                         Log.e(TAG, "==========="+document);
