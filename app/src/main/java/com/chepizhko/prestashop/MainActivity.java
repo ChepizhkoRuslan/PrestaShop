@@ -35,17 +35,17 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 public class MainActivity extends AppCompatActivity {
     private static String KEY = "XHKM6A6BLCA5MNYZQBX2GXBAAKSTPMK2";
     public final static String TAG = "myLogs";
-    private RecyclerView rv;
-
     private List<ImageItem> imageItems = new ArrayList<>();
     private List<String> id_default_image = new ArrayList<>();
     private List<String> name = new ArrayList<>();
     private List<String> description = new ArrayList<>();
     private List<String> reference = new ArrayList<>();
     private List<String> price = new ArrayList<>();
-
+    private RecyclerView rv;
+    Retrofit retrofit;
 
     public static int countResponse = 20;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,14 +62,19 @@ public class MainActivity extends AppCompatActivity {
                 .addInterceptor(new BasicAuthInterceptor(getAuthToken()))
                 .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
+        retrofit = new Retrofit.Builder()
                 .baseUrl("http://ps1722.weeteam.net/")
 //                .addConverterFactory(GsonConverterFactory.create())
-                .addConverterFactory(SimpleXmlConverterFactory.create())
 //                .addConverterFactory(new ToStringConverterFactory())
+                .addConverterFactory(SimpleXmlConverterFactory.create())
                 .client(client)
                 .build();
 
+        setRequest();
+
+    }
+
+    void setRequest(){
         final APIService service = retrofit.create(APIService.class);
         Call<ResponseBody> resp = service.callBack(getAuthToken());
         resp.enqueue(new Callback<ResponseBody>() {
@@ -89,15 +94,15 @@ public class MainActivity extends AppCompatActivity {
                         for(Element link : elements1){
                             a++; if(a>countResponse)break;
                             reference.add(link.text());
-//                            Log.e(TAG, "===========reference============"+link.text());
                         }
 
                         Elements elements2 = document.select("price");
                         int b = 0;
+
                         for(Element link : elements2){
                             b++; if(b>countResponse)break;
                             price.add(link.text());
-//                            Log.e(TAG, "===========price============"+link.text());
+
                         }
 
                         Elements elements3 = document.select("language[id=1]");
@@ -106,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
                             i3++; if(i3>countResponse+countResponse)break;
                             if(i3%2 == 1) {
                                 name.add(link.text());
-                                Log.e(TAG, "=======================" + link.text());
                             }else{
-                                description.add(link.text());
-                                Log.e(TAG, "=======================" + link.text());
+                                String elem = link.text().replace("<p>","");
+                                elem = elem.replace("</p>","");
+                                description.add(elem);
                             }
                         }
 
@@ -122,18 +127,17 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    int count = 0;
-
-                    for(int i=0; i < id_default_image.size();i++){
-                        count++;
-                        Toast.makeText(MainActivity.this, "Pars "+count+"  -  "+id_default_image.get(i) , Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    //items = ReworkList.reworkList(getApplicationContext(), id_default_image, reference ,price,name ,description );
+//                    int count = 0;
+//
+//                    for(int i=0; i < description.size();i++){
+//                        count++;
+//                        Toast.makeText(MainActivity.this, "Pars "+count+"  -  "+description.get(i) , Toast.LENGTH_SHORT).show();
+//
+//                    }
 
                     for (int i = 0; i < description.size(); i++){
-                        imageItems.add(new ImageItem("http://s1.1zoom.net/big0/994/298568-alexfas01.jpg", name.get(i),description.get(i),reference.get(i), price.get(i)));
+                        imageItems.add( new ImageItem( "http://life-instyle.com/index.php?option=com_joomgallery&view=image&format=raw&id=30928&type=img",
+                                name.get(i),description.get(i),reference.get(i), price.get(i)));
                     }
 
                     rv.setAdapter(new PrestaAdapter(getApplicationContext(), imageItems));
@@ -148,11 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
             }
         });
-
-//        new NewAsyncTask().execute();
-
     }
-
 
 
     public static String getAuthToken() {
@@ -165,19 +165,4 @@ public class MainActivity extends AppCompatActivity {
         return "Basic " + Base64.encodeToString(data, Base64.NO_WRAP);
     }
 
-
-    //    private class NewAsyncTask extends AsyncTask<String, String,List<ImageItem>>{
-//
-//        @Override
-//        protected List<ImageItem>  doInBackground(String... strings) {
-//
-//            return new ParserXmlAsyncTask().parseXmlResponse();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<ImageItem> its) {
-//            items = its;
-//            initAdapter();
-//        }
-//    }
 }

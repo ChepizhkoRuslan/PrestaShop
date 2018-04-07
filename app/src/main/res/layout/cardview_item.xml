@@ -1,22 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:card_view="http://schemas.android.com/tools"
               android:id="@+id/linear_item"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:padding="8dp"
-    >
 
+    >
     <android.support.v7.widget.CardView
+        android:id="@+id/cv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cv"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        card_view:cardCornerRadius="5dp"
+        card_view:cardElevation="5dp"
+
         >
 
         <RelativeLayout
+            android:id="@+id/rl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:id="@+id/rl"
+            android:padding="8dp"
 
             >
 
@@ -24,9 +31,10 @@
                 android:id="@+id/id_default_image"
                 android:layout_width="70dp"
                 android:layout_height="80dp"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
-                android:layout_marginRight="16dp"
+                android:layout_marginEnd="16dp"
+                android:background="#DCDACF"
                 />
 
             <TextView
@@ -35,7 +43,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_toEndOf="@+id/id_default_image"
-                android:textSize="10sp"/>
+                android:singleLine="true"
+                android:textSize="15sp"/>
 
             <TextView
                 android:id="@+id/description"
@@ -43,7 +52,13 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/name"
                 android:layout_toRightOf="@+id/id_default_image"
-                android:textSize="10sp"
+                android:ellipsize="end"
+                android:lines="2"
+                android:maxLength="60"
+                android:maxLines="2"
+                android:singleLine="true"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textSize="15sp"
 
                 />
 
@@ -51,21 +66,29 @@
                 android:id="@+id/reference"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/id_default_image"
                 android:layout_below="@+id/description"
-                android:textSize="10sp"
+                android:layout_toRightOf="@+id/id_default_image"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 />
+
             <TextView
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/id_default_image"
                 android:layout_below="@+id/reference"
-                android:textSize="10sp"
+                android:layout_toRightOf="@+id/id_default_image"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 />
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/description"
+                android:background="@drawable/ic_chevron_right_black_24dp"/>
 
         </RelativeLayout>
 
