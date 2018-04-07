@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private List<String> reference = new ArrayList<>();
     private List<String> price = new ArrayList<>();
 
-    Elements elements;
 
     public static int countResponse = 20;
 
@@ -71,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 .client(client)
                 .build();
 
-
         final APIService service = retrofit.create(APIService.class);
         Call<ResponseBody> resp = service.callBack(getAuthToken());
         resp.enqueue(new Callback<ResponseBody>() {
@@ -92,26 +90,26 @@ public class MainActivity extends AppCompatActivity {
                         Document document = Jsoup.parse(response.body().string());
                         Log.e(TAG, "==========="+document);
 
-                        elements = document.select("reference");
-                        int i = 0;
-                        for(Element link : elements){
-                            i++; if(i>countResponse)break;
+                        Elements elements1 = document.select("reference");
+                        int a = 0;
+                        for(Element link : elements1){
+                            a++; if(a>countResponse)break;
                             reference.add(link.text());
 //                            Log.e(TAG, "===========reference============"+link.text());
                         }
 
-                        elements = document.select("price");
+                        Elements elements2 = document.select("price");
                         int b = 0;
-                        for(Element link : elements){
-                            b++; if(i>countResponse)break;
+                        for(Element link : elements2){
+                            b++; if(b>countResponse)break;
                             price.add(link.text());
 //                            Log.e(TAG, "===========price============"+link.text());
                         }
 
-                        elements = document.select("language[id=1]");
+                        Elements elements3 = document.select("language[id=1]");
                         int i3 = 0;
-                        for(Element link : elements){
-                            i3++; if(i>countResponse+countResponse)break;
+                        for(Element link : elements3){
+                            i3++; if(i3>countResponse+countResponse)break;
                             if(i3%2 == 1) {
                                 name.add(link.text());
                                 Log.e(TAG, "=======================" + link.text());
@@ -119,20 +117,24 @@ public class MainActivity extends AppCompatActivity {
                                 description.add(link.text());
                                 Log.e(TAG, "=======================" + link.text());
                             }
-
-
                         }
+
+                        for(int i = 0; i< countResponse; i++){
+                            String elem = document.select("id_default_image").get(i).attr("xlink:href");
+                            id_default_image.add(elem);
+                        }
+
                     }catch (IOException e) {
                         e.printStackTrace();
                     }
 
                     int count = 0;
 
-//                    for(int i=0; i < description.size();i++){
-//                        count++;
-//                        Toast.makeText(MainActivity.this, "Pars "+count+"  -  "+description.get(i) , Toast.LENGTH_SHORT).show();
-//
-//                    }
+                    for(int i=0; i < id_default_image.size();i++){
+                        count++;
+                        Toast.makeText(MainActivity.this, "Pars "+count+"  -  "+id_default_image.get(i) , Toast.LENGTH_SHORT).show();
+
+                    }
 
                     //items = ReworkList.reworkList(getApplicationContext(), id_default_image, reference ,price,name ,description );
 
@@ -157,53 +159,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private void parseXmlResponse(String RESPONSE_STRNG_HERE) throws XmlPullParserException, IOException {
-//
-//        XmlPullParserFactory factory = null;
-//        try {
-//            factory = XmlPullParserFactory.newInstance();
-//        } catch (XmlPullParserException e) {
-//            e.printStackTrace();
-//        }
-//        if (factory != null) {
-//            factory.setNamespaceAware(true);
-//        }
-//        XmlPullParser xpp = null;
-//        if (factory != null) {
-//            xpp = factory.newPullParser();
-//        }
-//        if (xpp != null) {
-//            xpp.setInput(new StringReader(RESPONSE_STRNG_HERE));
-//        }
-//        int eventType = xpp.getEventType();
-//        while (eventType != XmlPullParser.END_DOCUMENT) {
-//            if (eventType == XmlPullParser.START_DOCUMENT) {
-//                System.out.println("Start document");
-//            } else if (eventType == XmlPullParser.START_TAG) {
-//                System.out.println("Start tag " + xpp.getName());
-//                Log.e("Count ----------", "" + xpp.getAttributeCount());
-//
-//                int ia;
-//                for (ia = 0; ia < xpp.getAttributeCount(); ia++) {
-//
-//                    if(xpp.getName().equals("id_default_image")) {
-//                            if (ia % 2 == 0) {
-//                                id_default_image.add(xpp.getAttributeValue(ia));
-//                                Log.e(TAG, "====000000000000000000000"+xpp.getAttributeValue(ia));
-//                            }
-//                    }
-//                }
-//
-//            } else if (eventType == XmlPullParser.END_TAG) {
-//                System.out.println("End tag ------------- " + xpp.getName());
-//            } else if (eventType == XmlPullParser.TEXT) {
-//
-//                Log.e(TAG, "TEXT==="+xpp.getText());
-//
-//            }
-//            eventType = xpp.next();
-//        }
-//    }
 
 
     public static String getAuthToken() {
