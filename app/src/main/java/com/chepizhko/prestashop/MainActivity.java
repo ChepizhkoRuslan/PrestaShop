@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity{
 
     private RecyclerView rv;
     Retrofit retrofit;
+    public static OkHttpClient client;
 
 
 
@@ -60,13 +61,8 @@ public class MainActivity extends AppCompatActivity{
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
-//        if(countRequest==20) {
-//            Intent serviceIntent = new Intent(this, MyService.class);
-//            startService(serviceIntent);
-//        }
 
-
-        OkHttpClient client = new OkHttpClient.Builder()
+        client = new OkHttpClient.Builder()
                 .addInterceptor(new BasicAuthInterceptor(getAuthToken()))
 
                 .build();
@@ -143,7 +139,7 @@ public class MainActivity extends AppCompatActivity{
 //                    }
 
                     for (int i = 0; i < description.size(); i++){
-                        imageItems.add( new ImageItem( "http://life-instyle.com/index.php?option=com_joomgallery&view=image&format=raw&id=30928&type=img",
+                        imageItems.add( new ImageItem( id_default_image.get(i),
                                 name.get(i),description.get(i),reference.get(i), price.get(i)));
                     }
 //                    LoadListener listener = new LoadListener() {

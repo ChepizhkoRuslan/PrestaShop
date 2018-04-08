@@ -38,5 +38,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.squareup.retrofit2:converter-simplexml:2.3.0'
     implementation 'org.jsoup:jsoup:1.11.2'
+    implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
 }

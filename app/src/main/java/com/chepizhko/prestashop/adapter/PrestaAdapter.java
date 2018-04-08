@@ -12,9 +12,12 @@ import android.widget.TextView;
 import com.chepizhko.prestashop.LoadListener;
 import com.chepizhko.prestashop.R;
 import com.chepizhko.prestashop.model.ImageItem;
+import com.jakewharton.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import static com.chepizhko.prestashop.MainActivity.client;
 
 public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaViewHolder> {
 
@@ -46,10 +49,21 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
             reference.setText(imageItem.getReference());
             price.setText(imageItem.getPrice());
             description.setText(imageItem.getDescription());
-            Picasso.with(mContext)
-                    .load(imageItem.getId_default_image())
-                    //.placeholder(R.drawable.up_close)
-                    .into(default_image);
+
+            Picasso picasso = new Picasso.Builder(mContext)
+                    .downloader(new OkHttp3Downloader(client)).build();
+
+            picasso.load(imageItem.getId_default_image()).
+//                    networkPolicy(NetworkPolicy.OFFLINE).
+                    resize(70, 80).
+                    into(default_image);
+
+//            Picasso.with(mContext)
+//                    .load(imageItem.getId_default_image())
+//                    //.placeholder(R.drawable.up_close)
+//                        .error(R.drawable.error)
+//                    .into(default_image);
+
         }
     }
 
