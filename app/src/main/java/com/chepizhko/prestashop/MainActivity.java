@@ -41,14 +41,12 @@ public class MainActivity extends AppCompatActivity{
     private List<String> description = new ArrayList<>();
     private List<String> reference = new ArrayList<>();
     private List<String> price = new ArrayList<>();
-
     public static int countRequest = 0;
-
     private RecyclerView rv;
     Retrofit retrofit;
     public static OkHttpClient client;
-
-
+    public static boolean loading = true;
+    PrestaAdapter mAdapter;
 
 
     @Override
@@ -56,15 +54,44 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         rv = (RecyclerView) findViewById(R.id.rv);
-
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
-        rv.setHasFixedSize(true);
+//        rv.setHasFixedSize(true);
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
 
+                if (loading) {
+                    if (dy > 0) //check for scroll down
+                    {
+                        int visibleItemCount = llm.getChildCount();
+                        int totalItemCount = llm.getItemCount();
+                        int pastVisiblesItems = llm.findFirstVisibleItemPosition();
+
+                        if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
+                            loading = false;
+
+                            Log.v("...", " Reached Last Item");
+                            countRequest = countRequest + 20;
+
+                            if(countRequest<140) {
+                                imageItems.clear();
+                                setRequest();
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
 
         client = new OkHttpClient.Builder()
                 .addInterceptor(new BasicAuthInterceptor(getAuthToken()))
-
                 .build();
 
         retrofit = new Retrofit.Builder()
@@ -75,7 +102,6 @@ public class MainActivity extends AppCompatActivity{
                 .client(client)
                 .build();
 
-//        imageItems = RequestRetrofit.setRequest(imageItems);
         setRequest();
        
     }
@@ -87,7 +113,6 @@ public class MainActivity extends AppCompatActivity{
             public void onResponse(@NonNull Call<ResponseBody> call, @NonNull Response<ResponseBody> response) {
                 Log.d(TAG, "RESPONSE ====== " + response + "==============" + getAuthToken());
                 Toast.makeText(MainActivity.this, "countRequest "+countRequest , Toast.LENGTH_SHORT).show();
-
 
                 if (response.isSuccessful()) {
 //                    Toast.makeText(MainActivity.this, "isSuccessful", Toast.LENGTH_SHORT).show();
@@ -118,26 +143,14 @@ public class MainActivity extends AppCompatActivity{
                                 description.add(elem);
                             }
                         }
-
                         for(int i = 0; i< elements1.size(); i++){
                             String elem = document.select("id_default_image").get(i).attr("xlink:href");
                             id_default_image.add(elem);
-                            Log.e(TAG, "==========================="+elem);
-
+                            Log.e(TAG, "=="+elem);
                         }
-
                     }catch (IOException e) {
                         e.printStackTrace();
                     }
-
-//                    int count = 0;
-//
-//                    for(int i=0; i < description.size();i++){
-//                        count++;
-//                        Toast.makeText(MainActivity.this, "Pars "+count+"  -  "+description.get(i) , Toast.LENGTH_SHORT).show();
-//
-//                    }
-
                     for (int i = 0; i < description.size(); i++){
                         imageItems.add( new ImageItem( id_default_image.get(i),
                                 name.get(i),description.get(i),reference.get(i), price.get(i)));
@@ -149,21 +162,24 @@ public class MainActivity extends AppCompatActivity{
 //                        }
 //                    };
 //                    rv.setAdapter(new PrestaAdapter(getApplicationContext(), imageItems,listener));
-
-                    rv.setAdapter(new PrestaAdapter(getApplicationContext(), imageItems));
+                    if(mAdapter==null) {
+                        mAdapter = new PrestaAdapter(getApplicationContext(), imageItems);
+                        rv.setAdapter(mAdapter);
+                    }
+                    if(countRequest!=0) {
+                        mAdapter.notifyDataSetChanged();
+                    }
 
                 } else {
                     Toast.makeText(MainActivity.this, "Error", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(@NonNull Call<ResponseBody> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 
     public static String getAuthToken() {
         byte[] data = new byte[0];
@@ -174,6 +190,4 @@ public class MainActivity extends AppCompatActivity{
         }
         return "Basic " + Base64.encodeToString(data, Base64.NO_WRAP);
     }
-
-
 }

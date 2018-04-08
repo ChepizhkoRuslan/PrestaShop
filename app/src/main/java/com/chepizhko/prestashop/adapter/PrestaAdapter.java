@@ -18,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import static com.chepizhko.prestashop.MainActivity.client;
+import static com.chepizhko.prestashop.MainActivity.loading;
 
 public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaViewHolder> {
 
@@ -40,7 +41,6 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
             description = (TextView)itemView.findViewById(R.id.description);
             reference = (TextView)itemView.findViewById(R.id.reference);
             price = (TextView)itemView.findViewById(R.id.price);
-
         }
 
         private void bindGalleryItem(ImageItem imageItem) {
@@ -52,18 +52,9 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
 
             Picasso picasso = new Picasso.Builder(mContext)
                     .downloader(new OkHttp3Downloader(client)).build();
-
             picasso.load(imageItem.getId_default_image()).
-//                    networkPolicy(NetworkPolicy.OFFLINE).
                     resize(70, 80).
                     into(default_image);
-
-//            Picasso.with(mContext)
-//                    .load(imageItem.getId_default_image())
-//                    //.placeholder(R.drawable.up_close)
-//                        .error(R.drawable.error)
-//                    .into(default_image);
-
         }
     }
 
@@ -93,11 +84,9 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
     public void onBindViewHolder(PrestaViewHolder prestaViewHolder, int i) {
         ImageItem imageItem = items.get(i);
         prestaViewHolder.bindGalleryItem(imageItem);
-
-//        if(i==19) {
-//            countRequest = countRequest + 20;
-//            listener.onLoadListener();
-//        }
+        if(i<items.size()){
+            loading = true;
+        }
     }
 
     @Override
