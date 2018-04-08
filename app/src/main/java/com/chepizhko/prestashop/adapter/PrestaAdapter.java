@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chepizhko.prestashop.LoadListener;
 import com.chepizhko.prestashop.R;
 import com.chepizhko.prestashop.model.ImageItem;
 import com.squareup.picasso.Picasso;
@@ -53,10 +54,13 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
     }
 
     private List<ImageItem> items;
+    private LoadListener listener;
 
-    public PrestaAdapter(Context context, List<ImageItem> items){
+
+    public PrestaAdapter(Context context, List<ImageItem> items){ //,LoadListener listener){
         this.mContext = context;
         this.items = items;
+//        this.listener = listener;
     }
 
     @Override
@@ -76,8 +80,10 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
         ImageItem imageItem = items.get(i);
         prestaViewHolder.bindGalleryItem(imageItem);
 
-//        prestaViewHolder.name.setText(items.get(i).getName());
-
+//        if(i==19) {
+//            countRequest = countRequest + 20;
+//            listener.onLoadListener();
+//        }
     }
 
     @Override

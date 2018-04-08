@@ -37,6 +37,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.squareup.retrofit2:converter-simplexml:2.3.0'
-    implementation 'org.leibnizcenter:xml-to-json:0.9.2'
     implementation 'org.jsoup:jsoup:1.11.2'
+
 }
