@@ -168,8 +168,10 @@ public class MainActivity extends AppCompatActivity{
                 mAdapter = new PrestaAdapter(getApplicationContext(), imageItems);
                 rv.setAdapter(mAdapter);
             }
-            if(countRequest!=0) {
-                mAdapter.notifyDataSetChanged();
+            else  {
+//                mAdapter.notifyItemChanged(countRequest+1);
+                mAdapter.notifyItemInserted(countRequest+1);
+                rv.scrollToPosition(countRequest+1);
             }
 //            mParseTask.cancel(false);
             mParseTask = null;
