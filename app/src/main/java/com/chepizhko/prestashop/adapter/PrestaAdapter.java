@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chepizhko.prestashop.App;
-import com.chepizhko.prestashop.LoadListener;
 import com.chepizhko.prestashop.R;
 import com.chepizhko.prestashop.model.ImageItem;
 import com.jakewharton.picasso.OkHttp3Downloader;
@@ -58,13 +57,10 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
     }
 
     private List<ImageItem> items;
-    private LoadListener listener;
 
-
-    public PrestaAdapter(Context context, List<ImageItem> items){ //,LoadListener listener){
+    public PrestaAdapter(Context context, List<ImageItem> items){
         this.mContext = context;
         this.items = items;
-//        this.listener = listener;
     }
 
     @Override

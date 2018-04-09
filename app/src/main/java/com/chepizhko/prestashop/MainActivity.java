@@ -68,14 +68,10 @@ public class MainActivity extends AppCompatActivity{
 
                         if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
                             loading = false;
-
                             Log.v("...", " Reached Last Item");
                             countRequest = countRequest + 20;
-
-                            if(countRequest<260) {
-                                imageItems.clear();
-                                setRequest();
-                            }
+                            imageItems.clear();
+                            setRequest();
                         }
                     }
                 }
