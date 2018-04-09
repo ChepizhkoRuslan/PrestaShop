@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chepizhko.prestashop.App;
 import com.chepizhko.prestashop.LoadListener;
 import com.chepizhko.prestashop.R;
 import com.chepizhko.prestashop.model.ImageItem;
@@ -17,7 +18,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import static com.chepizhko.prestashop.MainActivity.client;
 import static com.chepizhko.prestashop.MainActivity.loading;
 
 public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaViewHolder> {
@@ -31,7 +31,8 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
         private TextView description;
         private TextView reference;
         private TextView price;
-
+        Picasso picasso = new Picasso.Builder(mContext)
+                .downloader(new OkHttp3Downloader(App.getClient())).build();
 
         PrestaViewHolder(View itemView) {
             super(itemView);
@@ -50,8 +51,6 @@ public class PrestaAdapter extends RecyclerView.Adapter<PrestaAdapter.PrestaView
             price.setText(imageItem.getPrice());
             description.setText(imageItem.getDescription());
 
-            Picasso picasso = new Picasso.Builder(mContext)
-                    .downloader(new OkHttp3Downloader(client)).build();
             picasso.load(imageItem.getId_default_image()).
                     resize(70, 80).
                     into(default_image);
