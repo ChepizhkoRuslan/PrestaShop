@@ -1,6 +1,9 @@
 package com.chepizhko.prestashop.model;
 
-public class ImageItem {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ImageItem implements Parcelable {
 
     private String id_default_image;
     private String name;
@@ -16,7 +19,42 @@ public class ImageItem {
         this.reference = reference;
         this.price = price;
     }
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
+    // упаковываем объект в Parcel
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id_default_image);
+        parcel.writeString(name);
+        parcel.writeString(description);
+        parcel.writeString(reference);
+        parcel.writeString(price);
+    }
+
+    public static final Creator<ImageItem> CREATOR = new Creator<ImageItem>() {
+        // распаковываем объект из Parcel
+        @Override
+        public ImageItem createFromParcel(Parcel parcel) {
+            return new ImageItem(parcel);
+        }
+
+        @Override
+        public ImageItem[] newArray(int size) {
+            return new ImageItem[size];
+        }
+    };
+
+    // конструктор, считывающий данные из Parcel
+    private ImageItem(Parcel parcel) {
+        id_default_image = parcel.readString();
+        name = parcel.readString();
+        description = parcel.readString();
+        reference = parcel.readString();
+        price = parcel.readString();
+    }
 
     public String getName() {
         return name;
@@ -57,6 +95,5 @@ public class ImageItem {
     public void setPrice(String price) {
         this.price = price;
     }
-
 
 }
