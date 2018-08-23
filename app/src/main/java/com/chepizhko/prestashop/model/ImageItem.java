@@ -12,6 +12,8 @@ public class ImageItem implements Parcelable {
     private String price;
 
 
+
+
     public ImageItem(String id_default_image, String name, String description, String reference, String price) {
         this.id_default_image = id_default_image;
         this.name = name;

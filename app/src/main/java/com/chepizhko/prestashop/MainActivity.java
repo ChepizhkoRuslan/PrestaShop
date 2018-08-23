@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity{
                 Toast.makeText(MainActivity.this, "countRequest "+countRequest , Toast.LENGTH_SHORT).show();
 
                 if (response.isSuccessful()) {
-//                    new ParseTask(response.body()).execute();
+                    new ParseTask(response.body()).execute();
                     if(mParseTask == null){
                          mParseTask = new ParseTask(response.body());
                          mParseTask.execute();
